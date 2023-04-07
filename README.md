@@ -8,4 +8,5 @@
 git clone https://github.com/Josephdara/MultiCall_Foundry.git
 cd MultiCall_Foundry
 forge install
-forge test -vvvv```
+forge test -vvvv
+```
