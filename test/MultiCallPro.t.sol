@@ -13,7 +13,9 @@ contract MultiCallProTest is Test {
     address bob;
     address vick;
 
-    /// @dev Explain to a developer any extra details
+    /// @dev Set up and update all state variables required
+    // 3 Contracts and 3 Addresses
+    /// @notice ALICE is the deployer
     function setUp() public {
         alice = vm.addr(1);
         bob = vm.addr(2);
@@ -29,12 +31,18 @@ contract MultiCallProTest is Test {
      
     }
 
+
+    /// @dev Checks token balance minted during deployment, Checks native ETH balances
+   
     function testBalances() public {
         assertEq(vick.balance, 0);
         assertEq(alice.balance, 1 ether);
         assertEq(joes.balanceOf(bob), 0); 
         assertEq(joes.balanceOf(alice), 45_000 * 10 **18);        
     }
+
+    /// @dev Call Function foobar which calls the barfuzz function which sends the eth specified to the address specified
+    //Although calls are made to an address, funds can end up in another address
 
     function testFoobar() public {
         vm.startPrank(bob);
@@ -46,14 +54,17 @@ contract MultiCallProTest is Test {
         assertEq(bob.balance, 997999999999999099);
     }
 
+    ///@dev We approve our multicallprotwo address, then makes a call to which transfers the token directly to a different address
     function testfuzz_tokencall () public {
         vm.startPrank(alice);
-        joes.approve(address(multiCallProTwo), 10000 * 10 **18);
+        joes.approve(address(multiCallProTwo), type(uint256).max);
         multiCallProTwo.fuzz(8520 * 10 **18, vick, address(joes));
         vm.stopPrank();
         assertEq(joes.balanceOf(vick), 8_520 * 10 **18);
         assertEq(joes.balanceOf(alice), 36_480 * 10 **18);
     }
+
+    ///@dev Test call to withdraw eth
 
     function testbarfuzz () public {
         vm.startPrank(alice);
